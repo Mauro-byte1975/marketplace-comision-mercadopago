@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vender en el marketplace</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 640px; margin: 60px auto; padding: 0 16px; color: #222; text-align: center; }
+  a.top-link { display:block; margin-bottom: 24px; color: #009ee3; text-decoration: none; }
+  .card { border: 1px solid #e2e2e2; border-radius: 12px; padding: 32px; }
+  button { background: #009ee3; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; margin-top: 16px; }
+  button:hover { background: #007eb5; }
+  .ok { background: #e6f8ee; color: #16794d; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
+</style>
+</head>
+<body>
+  <a class="top-link" href="/index.html">← Ver catálogo</a>
+
+  <div id="mensaje"></div>
+
+  <div class="card">
+    <h1>Vendé tus productos acá</h1>
+    <p>Conectá tu cuenta de Mercado Pago. Cuando alguien te compre, el cobro se reparte automático: vos recibís tu parte y nosotros nuestra comisión, sin que tengas que hacer nada manual.</p>
+    <button onclick="window.location.href='/vendedores/connect'">Conectar mi cuenta de Mercado Pago</button>
+  </div>
+
+<script>
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("conectado") === "1") {
+    document.getElementById("mensaje").innerHTML = '<p class="ok">¡Listo! Tu cuenta quedó conectada. Ahora podés pedirnos que carguemos tus productos.</p>';
+  }
+</script>
+</body>
+</html>
