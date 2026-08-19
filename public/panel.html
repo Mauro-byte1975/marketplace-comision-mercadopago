@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mi panel de vendedor</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 720px; margin: 40px auto; padding: 0 16px; color: #222; }
+  a.top-link { display:inline-block; margin-bottom: 24px; color: #009ee3; text-decoration: none; }
+  h1 { margin-bottom: 4px; }
+  .sub { color: #666; margin-bottom: 24px; }
+  .card { border: 1px solid #e2e2e2; border-radius: 12px; padding: 24px; margin-bottom: 28px; }
+  label { display: block; font-size: 14px; font-weight: 600; margin: 12px 0 4px; }
+  input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; box-sizing: border-box; font-family: inherit; }
+  textarea { resize: vertical; min-height: 60px; }
+  button { background: #009ee3; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-size: 15px; margin-top: 16px; }
+  button:hover { background: #007eb5; }
+  .product { border: 1px solid #e2e2e2; border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .product h3 { margin: 0 0 4px; font-size: 16px; }
+  .product p { margin: 0; color: #666; font-size: 13px; }
+  .price { font-weight: bold; white-space: nowrap; }
+  .del { background: #f4433622; color: #c62828; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; margin-top: 6px; }
+  .del:hover { background: #f4433644; }
+  .empty { color: #888; }
+  .error { background: #fdecea; color: #b3261e; padding: 10px; border-radius: 8px; margin-top: 12px; display: none; }
+  .locked { text-align: center; padding: 60px 20px; }
+</style>
+</head>
+<body>
+  <div id="app"></div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+let sellerId = params.get("seller_id");
+let token = params.get("token");
+
+if (sellerId && token) {
+  localStorage.setItem("seller_id", sellerId);
+  localStorage.setItem("seller_token", token);
+  window.history.replaceState({}, "", "/panel.html");
+} else {
+  sellerId = localStorage.getItem("seller_id");
+  token = localStorage.getItem("seller_token");
+}
+
+const app = document.getElementById("app");
+
+if (!sellerId || !token) {
+  app.innerHTML = `
+    <div class="locked">
+      <h1>Todavía no conectaste tu cuenta</h1>
+      <p>Conectá tu cuenta de Mercado Pago para poder cargar tus productos.</p>
+      <a href="/vender.html"><button>Ir a conectar mi cuenta</button></a>
+    </div>
+  `;
+} else {
+  render();
+}
+
+function render() {
+  app.innerHTML = `
+    <a class="top-link" href="/index.html">← Ver catálogo público</a>
+    <h1>Mi panel de vendedor</h1>
+    <p class="sub">Cargá tus productos. Cuando alguien te compre, el cobro se reparte automático.</p>
+
+    <div class="card">
+      <h2 style="margin-top:0">Publicar un producto nuevo</h2>
+      <label>Nombre del producto</label>
+      <input id="f-title" placeholder="Ej: Remera oversize" />
+      <label>Descripción (opcional)</label>
+      <textarea id="f-desc" placeholder="Talles, color, materiales..."></textarea>
+      <label>Precio ($ ARS)</label>
+      <input id="f-price" type="number" min="0" step="1" placeholder="Ej: 15000" />
+      <label>URL de foto (opcional)</label>
+      <input id="f-image" placeholder="https://..." />
+      <div class="error" id="form-error"></div>
+      <button onclick="publicar()">Publicar producto</button>
+    </div>
+
+    <h2>Mis productos</h2>
+    <div id="lista"><p class="empty">Cargando...</p></div>
+  `;
+  cargarMisProductos();
+}
+
+async function cargarMisProductos() {
+  const res = await fetch(`/api/productos/mios?seller_id=${sellerId}&token=${token}`);
+  const lista = document.getElementById("lista");
+
+  if (!res.ok) {
+    lista.innerHTML = '<p class="empty">No pudimos cargar tus productos. Probá de nuevo más tarde.</p>';
+    return;
+  }
+
+  const productos = await res.json();
+
+  if (!productos.length) {
+    lista.innerHTML = '<p class="empty">Todavía no publicaste ningún producto.</p>';
+    return;
+  }
+
+  lista.innerHTML = productos.map(p => `
+    <div class="product">
+      <div>
+        <h3>${p.title}</h3>
+        <p>${p.description || ""}</p>
+      </div>
+      <div style="text-align:right">
+        <div class="price">$${Number(p.unit_price).toLocaleString("es-AR")}</div>
+        <button class="del" onclick="borrar(${p.id})">Eliminar</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function publicar() {
+  const title = document.getElementById("f-title").value.trim();
+  const description = document.getElementById("f-desc").value.trim();
+  const unit_price = document.getElementById("f-price").value;
+  const image_url = document.getElementById("f-image").value.trim();
+  const errorBox = document.getElementById("form-error");
+  errorBox.style.display = "none";
+
+  if (!title || !unit_price) {
+    errorBox.textContent = "Completá al menos el nombre y el precio.";
+    errorBox.style.display = "block";
+    return;
+  }
+
+  const res = await fetch("/api/productos", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ seller_id: sellerId, token, title, description, unit_price, image_url }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    errorBox.textContent = data.error || "No se pudo publicar el producto.";
+    errorBox.style.display = "block";
+    return;
+  }
+
+  document.getElementById("f-title").value = "";
+  document.getElementById("f-desc").value = "";
+  document.getElementById("f-price").value = "";
+  document.getElementById("f-image").value = "";
+  cargarMisProductos();
+}
+
+async function borrar(id) {
+  if (!confirm("¿Eliminar este producto?")) return;
+  await fetch(`/api/productos/${id}?token=${token}`, { method: "DELETE" });
+  cargarMisProductos();
+}
+</script>
+</body>
+</html>
