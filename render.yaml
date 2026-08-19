@@ -13,6 +13,6 @@ services:
       - key: BASE_URL
         sync: false
       - key: COMMISSION_PERCENT
-        value: "10"
+        value: "3"
       - key: PORT
         value: "3000"
