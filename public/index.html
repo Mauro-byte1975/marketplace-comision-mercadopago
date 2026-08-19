@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Marketplace</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 780px; margin: 40px auto; padding: 0 16px; color: #222; }
+  h1 { margin-bottom: 4px; }
+  .sub { color: #666; margin-bottom: 32px; }
+  .product { border: 1px solid #e2e2e2; border-radius: 10px; padding: 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .product h3 { margin: 0 0 4px; }
+  .product p { margin: 0; color: #666; font-size: 14px; }
+  .price { font-weight: bold; white-space: nowrap; }
+  button { background: #009ee3; color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-size: 14px; }
+  button:hover { background: #007eb5; }
+  .empty { color: #888; }
+  .top-link { display: inline-block; margin-bottom: 24px; color: #009ee3; text-decoration: none; }
+</style>
+</head>
+<body>
+  <a class="top-link" href="/vender.html">¿Querés vender acá? →</a>
+  <h1>Catálogo</h1>
+  <p class="sub">Productos publicados por nuestros vendedores.</p>
+  <div id="lista"><p class="empty">Cargando productos...</p></div>
+
+<script>
+async function cargarProductos() {
+  const res = await fetch("/api/productos");
+  const productos = await res.json();
+  const cont = document.getElementById("lista");
+
+  if (!productos.length) {
+    cont.innerHTML = '<p class="empty">Todavía no hay productos publicados.</p>';
+    return;
+  }
+
+  cont.innerHTML = productos.map(p => `
+    <div class="product">
+      <div>
+        <h3>${p.title}</h3>
+        <p>${p.description || ""}</p>
+      </div>
+      <div style="text-align:right">
+        <div class="price">$${Number(p.unit_price).toLocaleString("es-AR")}</div>
+        <button onclick="comprar(${p.id})">Comprar</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+async function comprar(productId) {
+  const res = await fetch(`/checkout/${productId}`, { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ quantity: 1 }) });
+  const data = await res.json();
+  if (data.init_point) {
+    window.location.href = data.init_point;
+  } else {
+    alert(data.error || "No se pudo generar el pago.");
+  }
+}
+
+cargarProductos();
+</script>
+</body>
+</html>
