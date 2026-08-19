@@ -57,6 +57,11 @@ module.exports = {
     save(data);
     return product;
   },
+    deleteProduct(id) {
+          const data = load();
+          data.products = data.products.filter((p) => p.id !== Number(id));
+          save(data);
+    },
 
   // Ordenes / ventas
   getOrders() {
