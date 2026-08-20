@@ -11,8 +11,8 @@
   body { font-family: 'Poppins', system-ui, sans-serif; margin: 0; color: #3a2c2f; background: #fff8f6; }
   .hero { background: linear-gradient(135deg, #f6c6ce 0%, #e8a4b8 45%, #c98ba0 100%); padding: 56px 20px 64px; text-align: center; color: #3a1f28; position: relative; overflow: hidden; }
   .hero::after { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.35), transparent 40%); }
-  .hero-icons { position: absolute; inset: 0; display: flex; flex-wrap: wrap; align-content: space-around; justify-content: space-around; opacity: 0.16; font-size: 46px; line-height: 1; pointer-events: none; user-select: none; z-index: 0; filter: grayscale(15%); }
-  .hero-icons span { transform: rotate(var(--r, 0deg)); }
+  .hero-photos { position: absolute; inset: 0; display: flex; flex-wrap: wrap; align-content: space-around; justify-content: space-around; z-index: 0; pointer-events: none; }
+  .hero-photos img { width: 108px; height: 108px; object-fit: contain; opacity: 0.24; filter: blur(1.6px) grayscale(8%) brightness(1.12) saturate(1.05); transform: rotate(var(--r, 0deg)); mix-blend-mode: multiply; }
   .hero-content { position: relative; z-index: 1; }
   .brand { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 700; letter-spacing: 1px; margin: 0; }
   .brand span { display: block; font-family: 'Poppins', sans-serif; font-size: 14px; letter-spacing: 4px; font-weight: 500; margin-top: 6px; text-transform: uppercase; color: #5c3441; }
@@ -46,11 +46,15 @@
 </head>
 <body>
   <div class="hero">
-    <div class="hero-icons">
-      <span style="--r:-8deg">💄</span><span style="--r:10deg">💄</span><span style="--r:-4deg">✂️</span><span style="--r:6deg">💅</span>
-      <span style="--r:12deg">🧴</span><span style="--r:-10deg">💄</span><span style="--r:4deg">🪒</span><span style="--r:-6deg">💅</span>
-      <span style="--r:8deg">✂️</span><span style="--r:-12deg">🧴</span><span style="--r:5deg">💄</span><span style="--r:-3deg">🪒</span>
-      <span style="--r:9deg">💅</span><span style="--r:-7deg">💄</span><span style="--r:3deg">✂️</span><span style="--r:-5deg">🧴</span>
+    <div class="hero-photos">
+      <img style="--r:-8deg" src="https://http2.mlstatic.com/D_NQ_NP_773271-MLA83522206951_042025-O.webp" alt="" />
+      <img style="--r:9deg" src="https://http2.mlstatic.com/D_NQ_NP_721474-MLA110623108637_042026-O.webp" alt="" />
+      <img style="--r:-5deg" src="https://http2.mlstatic.com/D_NQ_NP_984916-MLA107652957347_022026-O.webp" alt="" />
+      <img style="--r:6deg" src="https://http2.mlstatic.com/D_NQ_NP_932223-MLA89581577788_082025-O.webp" alt="" />
+      <img style="--r:-10deg" src="https://http2.mlstatic.com/D_NQ_NP_897125-MLA99442018946_112025-O.webp" alt="" />
+      <img style="--r:4deg" src="https://http2.mlstatic.com/D_NQ_NP_965286-MLA99503627260_112025-O.webp" alt="" />
+      <img style="--r:-7deg" src="https://http2.mlstatic.com/D_NQ_NP_821674-MLA111385556272_052026-O.webp" alt="" />
+      <img style="--r:8deg" src="https://http2.mlstatic.com/D_NQ_NP_877921-MLA112784684832_062026-O.webp" alt="" />
     </div>
     <div class="hero-content">
       <div class="location-badge">📍 San Luis · Mendoza · San Juan</div>
@@ -293,4 +297,4 @@
     </footer>
   </main>
 </body>
-           </html>
+                                          </html>
