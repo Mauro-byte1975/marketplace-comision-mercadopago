@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://marketplace-comision-mercadopago.onrender.com/sitemap.xml
+Sitemap: https://rapicomprasbelleza.com/sitemap.xml
